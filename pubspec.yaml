@@ -1,0 +1,46 @@
+name: language_pet_app
+description: A language learning pet simulator app
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # HTTP & APIs
+  http: ^1.2.0
+  
+  # Text-to-Speech
+  flutter_tts: ^4.0.2
+  
+  # Speech-to-Text
+  # speech_to_text: ^6.6.0
+  
+  # Storage
+  shared_preferences: ^2.2.2
+  
+  # Audio
+  audioplayers: ^6.0.0
+  path_provider: ^2.1.2
+  
+  # Permissions
+  permission_handler: ^11.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/audio/
+    - assets/animations/
