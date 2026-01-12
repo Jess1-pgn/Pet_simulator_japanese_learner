@@ -103,13 +103,13 @@ class _AnimatedPetWidgetState extends State<AnimatedPetWidget>
       case PetAnimation.eating:
         emoji = '🍴';
         break;
-      case PetAnimation.sleeping:
+      case PetAnimation.sleeping:     // ← OK maintenant
         emoji = '💤';
         break;
       case PetAnimation.happy:
         emoji = '✨';
         break;
-      case PetAnimation.annoyed:
+      case PetAnimation.annoyed:      // ← OK maintenant
         emoji = '💢';
         break;
       case PetAnimation.playing:
@@ -128,7 +128,7 @@ class _AnimatedPetWidgetState extends State<AnimatedPetWidget>
         builder: (context, value, child) {
           return Transform.translate(
             offset: Offset(0, -20 * value),
-            child:  Opacity(
+            child: Opacity(
               opacity: 1.0 - value,
               child: Text(
                 emoji,

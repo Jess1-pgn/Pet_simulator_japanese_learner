@@ -40,7 +40,7 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
       print('✅ LearningTestScreen: VocabService initialized');
 
       _dailyWord = await _vocabService.getDailyWord();
-      print('📅 LearningTestScreen:  Daily word = ${_dailyWord?. japanese ??  "null"}');
+      print('📅 LearningTestScreen: Daily word = ${_dailyWord?.japanese ??  "null"}');
 
       if (_dailyWord == null) {
         setState(() => _errorMessage = 'Could not load daily word.  Check internet connection.');
@@ -66,18 +66,17 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
     });
 
     try {
-      // Force un nouveau mot en effaçant la date
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('daily_word_date');
       print('🗑️ LearningTestScreen: Cleared daily word date');
 
-      _dailyWord = await _vocabService. getDailyWord();
+      _dailyWord = await _vocabService.getDailyWord();
 
       if (_dailyWord == null) {
         setState(() => _errorMessage = 'Could not load daily word');
-        print('❌ LearningTestScreen: Failed to get new daily word');
+        print('❌ LearningTestScreen:  Failed to get new daily word');
       } else {
-        print('✅ LearningTestScreen: Daily word refreshed:  ${_dailyWord!.japanese}');
+        print('✅ LearningTestScreen: Daily word refreshed:  ${_dailyWord! .japanese}');
       }
     } catch (e) {
       setState(() => _errorMessage = 'Error refreshing: $e');
@@ -90,7 +89,7 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
   Future<void> _searchWord() async {
     if (_searchController.text.isEmpty) return;
 
-    print('🔍 LearningTestScreen: Searching for "${_searchController.text}"');
+    print('🔍 LearningTestScreen:  Searching for "${_searchController.text}"');
 
     setState(() {
       _isLoading = true;
@@ -99,13 +98,13 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
     });
 
     try {
-      _searchResults = await _vocabService. searchWord(_searchController.text);
+      _searchResults = await _vocabService.searchWord(_searchController.text);
 
-      if (_searchResults.isEmpty) {
+      if (_searchResults. isEmpty) {
         setState(() => _errorMessage = 'No results found for "${_searchController.text}"');
         print('⚠️ LearningTestScreen: No results found');
       } else {
-        print('✅ LearningTestScreen: Found ${_searchResults. length} results');
+        print('✅ LearningTestScreen: Found ${_searchResults.length} results');
       }
     } catch (e) {
       setState(() => _errorMessage = 'Search error: $e');
@@ -115,40 +114,35 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
     }
   }
 
-  Future<void> _startListening() async {
-    await _vocabService.stt.startListeningJapanese(
-      onResult: (text) {
-        setState(() => _recognizedText = text);
-      },
-    );
-    setState(() {});
-  }
-
-  Future<void> _stopListening() async {
-    await _vocabService. stt.stopListening();
-    setState(() {});
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
             decoration: const BoxDecoration(
-              gradient: AppTheme.backgroundGradient,
+              gradient:  AppTheme.phoneGradient,
             ),
             child: SafeArea(
               child: Column(
                   children: [
-              // Custom App Bar
+              // Custom App Bar avec style glassmorphism
               Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Text(
-                    '📚 Dictionary & Learning',
-                    style: AppTheme.headingStyle,
-                  ),
-                ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                decoration: AppTheme.glassDecoration,
+                child: Row(
+                  children: [
+                    const Text(
+                      '📚',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      'Dictionary',
+                      style: AppTheme.titleStyle. copyWith(fontSize: 22),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -157,7 +151,7 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
               child: SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment. start,
                       children: [
                       // Error message
                       if (_errorMessage.isNotEmpty)
@@ -165,35 +159,48 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
                   padding: const EdgeInsets.all(12),
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.red[100],
-                borderRadius: AppTheme.smallRadius,
+                color: Colors.red.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(15),
+                border: Border.all(
+                  color: Colors.red. withOpacity(0.5),
+                  width: 2,
+                ),
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.error_outline, color: Colors.red),
+                  const Icon(Icons.error_outline, color: Colors.white),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       _errorMessage,
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            // Daily Word Card
+            // Daily Word Card avec glassmorphism
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
-              decoration:  BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end:  Alignment.bottomRight,
-                  colors: [Color(0xFFFFF9C4), Color(0xFFFFE082)],
+              decoration: BoxDecoration(
+                color: Colors.white. withOpacity(0.25),
+                borderRadius: BorderRadius.circular(25),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.4),
+                  width: 2,
                 ),
-                borderRadius: AppTheme.mediumRadius,
-                boxShadow: AppTheme.cardShadow,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius:  30,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -201,104 +208,183 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
                   Row(
                     children: [
                       const Text(
-                        '📚 ',
-                        style:  TextStyle(fontSize: 24),
+                        '✨ ',
+                        style: TextStyle(fontSize: 24),
                       ),
-                      Text(
+                      const Text(
                         'Daily Word',
-                        style: AppTheme.subheadingStyle,
+                        style: TextStyle(
+                          fontSize:  20,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white,
+                        ),
                       ),
                       const Spacer(),
                       // Bouton refresh
-                      IconButton(
-                        icon: const Icon(Icons.refresh),
-                        onPressed: _isLoading ? null : _refreshDailyWord,
-                        tooltip: 'Get new word',
-                        color: AppTheme.primaryColor,
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.3),
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          icon:  const Icon(Icons.refresh),
+                          onPressed: _isLoading ? null : _refreshDailyWord,
+                          tooltip: 'Get new word',
+                          color: Colors.white,
+                        ),
                       ),
                       if (_isLoading && _dailyWord == null)
-                        const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
+                        const Padding(
+                          padding:  EdgeInsets.only(left: 10),
+                          child: SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:  CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          ),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   if (_dailyWord != null) ...[
                     Text(
                       _dailyWord!.japanese,
                       style: const TextStyle(
-                        fontSize: 40,
+                        fontSize: 48,
                         fontWeight:  FontWeight.bold,
-                        color: Color(0xFF2D3142),
+                        color: Colors.white,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 4),
+                            blurRadius: 10,
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height:  8),
                     Text(
                       _dailyWord!.reading,
-                      style: TextStyle(
-                        fontSize:  20,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _dailyWord!.englishMeanings.join(', '),
                       style: const TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFF4F5D75),
+                        fontSize:  20,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius:  BorderRadius.circular(15),
+                      ),
+                      child: Text(
+                        _dailyWord!.englishMeanings.join(', '),
+                        style:  const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height:  20),
+                    Row(
                       children: [
-                        ElevatedButton.icon(
-                          onPressed: () =>
-                              _vocabService.pronounceJapanese(_dailyWord!.japanese),
-                          icon: const Icon(Icons.volume_up),
-                          label: const Text('🇯🇵 Japanese'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                        Expanded(
+                          child:  ElevatedButton.icon(
+                            onPressed: () => _vocabService
+                                .pronounceJapanese(_dailyWord!.japanese),
+                            icon: const Icon(Icons.volume_up, size: 20),
+                            label: const Text('🇯🇵'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white. withOpacity(0.3),
+                              foregroundColor:  Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
                           ),
                         ),
-                        ElevatedButton.icon(
-                          onPressed:  () => _vocabService
-                              .pronounceEnglish(_dailyWord!.englishMeanings. first),
-                          icon: const Icon(Icons.volume_up),
-                          label: const Text('🇬🇧 English'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            foregroundColor: Colors.white,
+                        const SizedBox(width:  10),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () => _vocabService. pronounceEnglish(
+                                _dailyWord!.englishMeanings. first),
+                            icon: const Icon(Icons.volume_up, size: 20),
+                            label: const Text('🇬🇧'),
+                            style: ElevatedButton. styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.3),
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    if (_dailyWord! .isCommon)
-                      Chip(
-                        label: const Text('Common Word'),
-                        backgroundColor: Colors.green[100],
-                        avatar: const Icon(Icons.star, size: 16),
+                    if (_dailyWord!.isCommon)
+                      Padding(
+                        padding:  const EdgeInsets.only(top: 12),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withOpacity(0.3),
+                            borderRadius:  BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Colors.amber. withOpacity(0.6),
+                              width: 2,
+                            ),
+                          ),
+                          child: const Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.star, color: Colors.amber, size: 16),
+                              SizedBox(width: 5),
+                              Text(
+                                'Common Word',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight:  FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                   ] else if (! _isLoading)
                     Column(
                       children: [
                         const Text(
                           'Could not load daily word.',
-                          style: TextStyle(color: Colors.red, fontSize: 16),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                        const SizedBox(height: 8),
-                        ElevatedButton. icon(
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
                           onPressed: _refreshDailyWord,
                           icon: const Icon(Icons. refresh),
-                          label:  const Text('Try Again'),
-                          style:  ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
+                          label: const Text('Try Again'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:  Colors.white.withOpacity(0.3),
                             foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 12,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius. circular(15),
+                            ),
                           ),
                         ),
                       ],
@@ -310,71 +396,59 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
             const SizedBox(height: 24),
 
             // Search Section
-            Text(
+            const Text(
               '🔍 Search Dictionary',
-              style: AppTheme.subheadingStyle,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                color: Colors.white,
+                shadows: [
+                  Shadow(
+                    color: Colors.black26,
+                    offset:  Offset(0, 2),
+                    blurRadius:  8,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _searchController,
+              style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelText: 'Search word (Japanese or English)',
+                labelText: 'Search word',
+                labelStyle: TextStyle(color: Colors.white. withOpacity(0.8)),
                 hintText: 'Try:  犬, cat, hello, こんにちは',
+                hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors. white.withOpacity(0.2),
                 border: OutlineInputBorder(
-                  borderRadius: AppTheme.smallRadius,
-                  borderSide: BorderSide.none,
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide:  BorderSide(
+                    color: Colors.white. withOpacity(0.5),
+                    width: 2,
+                  ),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius:  BorderRadius.circular(20),
+                  borderSide: BorderSide(
+                    color: Colors.white.withOpacity(0.5),
+                    width: 2,
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                    width: 2,
+                  ),
                 ),
                 suffixIcon: IconButton(
-                  icon: const Icon(Icons. search),
-                  onPressed:  _searchWord,
+                  icon: const Icon(Icons.search, color: Colors.white),
+                  onPressed: _searchWord,
                 ),
               ),
               onSubmitted: (_) => _searchWord(),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Speech Recognition Card (disabled)
-            Container(
-              width: double. infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: AppTheme.smallRadius,
-                border: Border.all(color: Colors.blue[200]!),
-              ),
-              child: Column(
-                children: [
-                  const Text(
-                    '🎤 Speech Recognition',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    _recognizedText. isEmpty
-                        ? 'Coming soon!  (Feature disabled)'
-                        : _recognizedText,
-                    style:  const TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton.icon(
-                    onPressed: null, // Disabled
-                    icon: const Icon(Icons.mic_off),
-                    label: const Text('Not Available'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.grey,
-                      disabledBackgroundColor: Colors. grey,
-                      disabledForegroundColor: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
             ),
 
             const SizedBox(height: 24),
@@ -384,48 +458,60 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
         const Center(
     child:  Padding(
     padding: EdgeInsets.all(32.0),
-    child: CircularProgressIndicator(),
+    child: CircularProgressIndicator(
+    color: Colors.white,
+    ),
     ),
     )
     else if (_searchResults.isNotEmpty) ...[
     Text(
-    'Search Results (${_searchResults.length})',
-    style: AppTheme.subheadingStyle,
+    'Results (${_searchResults.length})',
+    style: const TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.w900,
+    color: Colors.white,
+    ),
     ),
     const SizedBox(height: 12),
-    ..._searchResults.take(10).map((word) => Container(
+    ..._searchResults.take(10).map(
+    (word) => Container(
     margin: const EdgeInsets.only(bottom: 12),
     decoration: BoxDecoration(
-    color: Colors.white,
-    borderRadius: AppTheme.smallRadius,
-    boxShadow: AppTheme.cardShadow,
+    color: Colors.white.withOpacity(0.2),
+    borderRadius: BorderRadius.circular(20),
+    border: Border.all(
+    color: Colors.white. withOpacity(0.4),
+    width: 2,
     ),
-    child:  ListTile(
+    ),
+    child: ListTile(
     contentPadding: const EdgeInsets.all(16),
     title: Text(
     '${word.japanese} (${word.reading})',
     style: const TextStyle(
     fontSize: 18,
     fontWeight:  FontWeight.bold,
+    color: Colors.white,
     ),
     ),
     subtitle:  Padding(
     padding: const EdgeInsets.only(top: 8),
-    child: Text(
-    word.englishMeanings.join(', '),
-    style: TextStyle(color: Colors.grey[600]),
+    child:  Text(
+    word. englishMeanings.join(', '),
+    style: TextStyle(
+    color:  Colors.white.withOpacity(0.8),
+    ),
     ),
     ),
     trailing: IconButton(
-    icon: const Icon(Icons. volume_up, color: AppTheme.primaryColor),
+    icon: const Icon(Icons.volume_up, color: Colors.white),
     onPressed: () =>
     _vocabService.pronounceJapanese(word.japanese),
     ),
-    onTap: () {
-    _showWordDetails(word);
-    },
+    onTap: () => _showWordDetails(word),
     ),
-    )),
+    ),
+    ),
     ],
     ],
     ),
@@ -436,13 +522,23 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
     ),
     ),
     );
-  }
+    }
 
   void _showWordDetails(Word word) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(word.japanese),
+        backgroundColor: const Color(0xFFA29BFE),
+        shape: RoundedRectangleBorder(
+          borderRadius:  BorderRadius.circular(20),
+        ),
+        title: Text(
+          word.japanese,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         content: SingleChildScrollView(
           child:  Column(
             mainAxisSize: MainAxisSize.min,
@@ -450,31 +546,67 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
             children: [
               Text(
                 'Reading: ${word.reading}',
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16, color: Colors. white),
               ),
               const SizedBox(height: 12),
               const Text(
                 'Meanings: ',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 4),
-              ...word.englishMeanings. map((meaning) => Padding(
-                padding: const EdgeInsets.only(left: 8, top: 4),
-                child: Text('• $meaning'),
-              )),
-              const SizedBox(height: 12),
+              ...word.englishMeanings.map(
+                    (meaning) => Padding(
+                  padding: const EdgeInsets.only(left: 8, top: 4),
+                  child: Text(
+                    '• $meaning',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              const SizedBox(height:  12),
               if (word.isCommon)
-                Chip(
-                  label: const Text('Common Word'),
-                  backgroundColor: Colors.green[100],
-                  avatar: const Icon(Icons.star, size: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical:  6),
+                  decoration:  BoxDecoration(
+                    color: Colors.amber.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.amber, width: 2),
+                  ),
+                  child: const Row(
+                    mainAxisSize:  MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 16),
+                      SizedBox(width: 5),
+                      Text(
+                        'Common Word',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               if (word.jlptLevel. isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
-                  child:  Chip(
-                    label: Text('JLPT:  ${word.jlptLevel. join(", ")}'),
-                    backgroundColor:  Colors.blue[100],
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.blue, width: 2),
+                    ),
+                    child: Text(
+                      'JLPT:  ${word.jlptLevel. join(", ")}',
+                      style:  const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
             ],
@@ -482,15 +614,13 @@ class _LearningTestScreenState extends State<LearningTestScreen> {
         ),
         actions: [
           TextButton. icon(
-            onPressed: () {
-              _vocabService.pronounceJapanese(word.japanese);
-            },
-            icon: const Icon(Icons.volume_up),
-            label: const Text('Pronounce'),
+            onPressed: () => _vocabService.pronounceJapanese(word.japanese),
+            icon: const Icon(Icons.volume_up, color: Colors.white),
+            label: const Text('Pronounce', style: TextStyle(color: Colors.white)),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const Text('Close', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

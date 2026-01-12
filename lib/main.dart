@@ -2,18 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'models/pet_state.dart';
+import 'services/pet_profile_service.dart';
+import 'screens/pet_creation_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/learning_test_screen.dart';
 import 'utils/app_theme.dart';
 
 void main() {
-  WidgetsFlutterBinding. ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   // Set system UI overlay style
-  SystemChrome.setSystemUIOverlayStyle(
+  SystemChrome. setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: Colors. transparent,
-      statusBarIconBrightness: Brightness. dark,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness. light, // Changé en light pour fond coloré
     ),
   );
 
@@ -30,24 +32,108 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Language Pet',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: AppTheme.primaryColor,
-          scaffoldBackgroundColor:  AppTheme.backgroundColor,
-          useMaterial3: true,
-          fontFamily: 'Roboto',
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppTheme. primaryColor,
-            brightness: Brightness.light,
-          ),
-        ),
-        home: const MainNavigator(),
+        theme: AppTheme.lightTheme, // Utilise le thème depuis AppTheme
+        home: const SplashScreen(), // Écran de démarrage
+        routes: {
+          '/home': (context) => const MainNavigator(),
+          '/create-pet': (context) => const PetCreationScreen(),
+        },
       ),
     );
   }
 }
 
+// Écran de splash qui vérifie si le pet existe
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final PetProfileService _profileService = PetProfileService();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkProfile();
+  }
+
+  Future<void> _checkProfile() async {
+    // Petit délai pour effet splash
+    await Future.delayed(const Duration(seconds: 1));
+
+    print('🔍 Checking if pet profile exists...');
+    final hasProfile = await _profileService.hasProfile();
+
+    if (!mounted) return;
+
+    if (hasProfile) {
+      print('✅ Pet profile found, going to home');
+      Navigator.of(context).pushReplacementNamed('/home');
+    } else {
+      print('⚠️ No pet profile, going to creation screen');
+      Navigator.of(context).pushReplacementNamed('/create-pet');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: AppTheme.phoneGradient,
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Logo/Animation
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 800),
+                builder: (context, value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: const Text(
+                      '🐱',
+                      style: TextStyle(fontSize: 100),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Language Pet',
+                style: TextStyle(
+                  fontSize: 32,
+                  fontWeight: FontWeight.w900,
+                  color: Colors. white,
+                  shadows: [
+                    Shadow(
+                      color: Colors.black26,
+                      offset: Offset(0, 4),
+                      blurRadius:  12,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 40),
+              const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Navigation principale avec bottom nav bar
 class MainNavigator extends StatefulWidget {
-  const MainNavigator({Key?  key}) : super(key: key);
+  const MainNavigator({Key? key}) : super(key: key);
 
   @override
   State<MainNavigator> createState() => _MainNavigatorState();
@@ -67,6 +153,14 @@ class _MainNavigatorState extends State<MainNavigator> {
       body: _screens[_currentIndex],
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment. bottomCenter,
+            colors: [
+              Colors.white.withOpacity(0.9),
+              Colors.white,
+            ],
+          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -78,11 +172,11 @@ class _MainNavigatorState extends State<MainNavigator> {
         child: BottomNavigationBar(
           currentIndex: _currentIndex,
           onTap: (index) => setState(() => _currentIndex = index),
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.transparent,
           selectedItemColor: AppTheme.primaryColor,
-          unselectedItemColor: Colors. grey,
+          unselectedItemColor: Colors.grey,
           selectedFontSize: 12,
-          unselectedFontSize:  12,
+          unselectedFontSize: 12,
           type: BottomNavigationBarType.fixed,
           elevation: 0,
           items:  const [
